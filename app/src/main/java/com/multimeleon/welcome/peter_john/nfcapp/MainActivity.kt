@@ -1,14 +1,10 @@
 package com.multimeleon.welcome.peter_john.nfcapp
 
-import android.app.Activity
-import android.app.PendingIntent
 import android.content.Intent
-import android.content.IntentFilter
 import android.nfc.NfcAdapter
-import android.nfc.tech.Ndef
-import android.nfc.tech.NdefFormatable
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -37,11 +33,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        val messageWrittenSuccessfully = NFCUtil.createNFCMessage(messageEditText.text.toString(), intent)
-        resultTextView.text = ifElse(messageWrittenSuccessfully,"Successful Written to Tag","Something When wrong Try Again")
+        val messageWrittenSuccessfully = NFCUtil.createNFCMessage("anything", intent)
+        resultTextView.text = messageDisplayed(messageWrittenSuccessfully)
+        imageView.visibility = View.INVISIBLE
+        imageView.setImageResource(imageDisplayed(messageWrittenSuccessfully))
+        imageView.visibility = View.VISIBLE
     }
 
+    fun messageDisplayed(messageWrittenInTag: Boolean ): String =
+            when (messageWrittenInTag) {
+                true -> getString(R.string.success_message)
+                false -> getString(R.string.error_message)
+            }
 
-    fun<T> ifElse(condition: Boolean, primaryResult: T, secondaryResult: T) = if (condition) primaryResult else secondaryResult
-
+    fun imageDisplayed(messageWrittenInTag: Boolean) =
+            when (messageWrittenInTag){
+                true -> R.drawable.ic_thumb_up_black_48dp
+                false -> R.drawable.ic_thumb_down_black_48dp
+            }
 }
